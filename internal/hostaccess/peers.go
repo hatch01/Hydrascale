@@ -162,15 +162,24 @@ func BuildDNSNames(tailnetID string, peers []Peer) map[string]string {
 }
 
 func BuildDNSRecords(tailnetID string, peers []Peer) (v4 map[string]string, v6 map[string]string) {
-	v4 = make(map[string]string, len(peers))
-	v6 = make(map[string]string, len(peers))
+	v4 = make(map[string]string, len(peers)*4)
+	v6 = make(map[string]string, len(peers)*2)
 	for _, p := range peers {
-		name := tailnetID + "-" + p.Hostname
-		if p.IPv4 != "" {
-			v4[name] = p.IPv4
+		names := []string{p.Hostname}
+		if p.AliasName != "" && p.AliasName != p.Hostname {
+			names = append(names, p.AliasName)
 		}
-		if p.IPv6 != "" {
-			v6[name] = p.IPv6
+		for _, n := range names {
+			prefixed := tailnetID + "-" + n
+			if p.IPv4 != "" {
+				v4[prefixed] = p.IPv4
+				if _, ok := v4[n]; !ok {
+				v4[n] = p.IPv4
+				}
+			}
+			if p.IPv6 != "" {
+				v6[prefixed] = p.IPv6
+			}
 		}
 	}
 	return v4, v6

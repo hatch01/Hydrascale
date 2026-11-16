@@ -201,7 +201,7 @@ func TestBuildDNSNames(t *testing.T) {
 
 func TestBuildDNSRecords(t *testing.T) {
 	peers := []Peer{
-		{Hostname: "alpha", IPv4: "100.64.0.1", IPv6: "fd7a::1"},
+		{Hostname: "alpha", AliasName: "alias-alpha", IPv4: "100.64.0.1", IPv6: "fd7a::1"},
 		{Hostname: "beta", IPv4: "100.64.0.2"},
 		{Hostname: "gamma", IPv6: "fd7a::3"},
 	}
@@ -213,6 +213,15 @@ func TestBuildDNSRecords(t *testing.T) {
 	}
 	if v4["net-beta"] != "100.64.0.2" {
 		t.Errorf("v4[net-beta] = %q, want %q", v4["net-beta"], "100.64.0.2")
+	}
+	if v4["alpha"] != "100.64.0.1" {
+		t.Errorf("v4[alpha] = %q, want %q", v4["alpha"], "100.64.0.1")
+	}
+	if v4["alias-alpha"] != "100.64.0.1" {
+		t.Errorf("v4[alias-alpha] = %q, want %q", v4["alias-alpha"], "100.64.0.1")
+	}
+	if v4["net-alias-alpha"] != "100.64.0.1" {
+		t.Errorf("v4[net-alias-alpha] = %q, want %q", v4["net-alias-alpha"], "100.64.0.1")
 	}
 	if _, ok := v4["net-gamma"]; ok {
 		t.Error("gamma has no IPv4, should not appear in v4 map")
